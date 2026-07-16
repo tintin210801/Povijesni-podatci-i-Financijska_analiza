@@ -1,7 +1,7 @@
-#Projekt 1:
+**Projekt 1:**
 Analiza povijesnih podataka, uređenje podataka i osnovni tehnički indikatori
 
-Ovaj projekt automatski preuzima povijesne podatke za odabrane financijske instrumente te podatke uređeje zatim provodi detaljnu statističku i tehničku analizu.
+Ovaj projekt automatski preuzima povijesne podatke za odabrane financijske instrumente te podatke uređuje zatim provodi statističku i tehničku analizu.
 
 **Analizirane Imovine** (Tickeri) koje obrađuje su:
 * **Kriptovalute:** BTC-USD, ETH-USD
