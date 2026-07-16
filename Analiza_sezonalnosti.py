@@ -1,11 +1,8 @@
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# 1. Izračunaj dnevne prinose u postotcima za jedan ticker (npr. SPY ili BTC-USD)
+# Dnevni prinosi u postotcima za jedan ticker (npr. SPY ili BTC-USD)
 odabrani_ticker = 'GOOGL'  # Promijeni u 'BTC-USD' ako analiziraš kripto
 Prinosi = Data['Close'][odabrani_ticker].pct_change().dropna() * 100
 
-# 2. Kreiramo privremeni DataFrame za analizu sezonalnosti
+# Privremeni DataFrame za analizu sezonalnosti
 df_sezona = Prinosi.to_frame(name='Prinos')
 
 # Izvlačimo naziv dana u tjednu i naziv mjeseca iz indexa (datuma)
@@ -14,13 +11,13 @@ df_sezona['Mjesec'] = df_sezona.index.strftime('%b')  # 'Jan', 'Feb', 'Mar'...
 
 # Poredaj dane u tjednu kronološki (da ne idu abecedno)
 dani_redoslijed = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-# Ako analiziraš Bitcoin koji radi i vikendom, koristi ovaj redoslijed:
+# Ako analiziraš kriptovalute koji radi vikendom onda koristi ovaj redoslijed:
 # dani_redoslijed = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 # Poredaj mjesece kronološki
 mjeseci_redoslijed = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-# 3. CRTANJE GRAFIKONA (2 grafa na jednoj slici)
+# CRTANJE GRAFIKONA (2 grafa na jednoj slici)
 fig, axes = plt.subplots(2, 1, figsize=(12, 12))
 
 # GRAF 1: Sezonalnost po danima u tjednu
