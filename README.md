@@ -11,7 +11,7 @@ Ovaj projekt automatski preuzima povijesne podatke za odabrane financijske instr
 * **Automatsko dohvaćanje podataka:** Preuzimanje najnovijih podataka (OHLCV) do današnjeg dana koristeći yahoo finance.
 * **Statistička analiza:** Izračunavanje osnovnih statistika (Maksimum, Minimum, Prosjek, Medijan, Standardnu devijaciju), ispisuje ih u tablicu te analiza strukture podataka.
 * **Izračun prinosa i volatilnosti:** Računa više vrsta prinosa (Jednostavni, logaritamski, kumulativni) i volatilnost (dnevnu, godišnju i rolling).
-* **Tehnički indikatori:** Izračun i vizualizacija pokretnih prosjeka (SMA, EMA), RSI-ja, MACD-a, Bollingerovih traka, te njihova vizualizacija na grafikonima.
+* **Tehnički indikatori:** Izračun pokretnih prosjeka (SMA, EMA), RSI-ja, MACD-a, Bollingerovih traka, te njihova vizualizacija na grafikonima.
 * **Analiza sezonalnosti:** Istraživanje povijesnih prinosa po mjesecima i danima u tjednu pomoću Boxplot vizualizacije.
 * **Vizualizacija rizika:** Prikaz distribucije dnevnih prinosa (histogram) i rolling volatilnosti kroz vrijeme.
 * **Korelacijska matrica:** Prikaz korelacijske matrice cijene i volumena odvojeno te spojenu matricu cijene i volumena
