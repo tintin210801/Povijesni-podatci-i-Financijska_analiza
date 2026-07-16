@@ -1,11 +1,5 @@
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
-# 1. IZDVAJANJE I ČIŠĆENJE POJEDINAČNE IMOVINE
+# IZDVAJANJE I ČIŠĆENJE POJEDINAČNE IMOVINE
 Price_btc = Price["BTC-USD"].ffill().bfill()
-
-
 
 # IZRAČUN MACD-A SAMO ZA BTC
 # Izračun 25-dnevnog i 50-dnevnog EMA za BTC
