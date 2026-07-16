@@ -22,27 +22,26 @@ def main():
     print("     POKRETANJE ANALIZE")
     print("=" * 60)
 
-    # 1. KORAK: Nabava i priprema podataka (Ovo je ključno za sve ostale korake!)
+    # Nabava i priprema podataka (Ovo je ključno za sve ostale korake!)
     pokreni_skriptu("Nabava_podataka.py")
     
-    # 2. KORAK: Pregled strukture i izračun osnovne statistike
+    # Pregled strukture i izračun osnovne statistike
     pokreni_skriptu("Struktura_podataka.py")
     pokreni_skriptu("Izračun_statistike.py")
     
-    # 3. KORAK: Izračun i vizualizacija povrata te volatilnosti
+    # Izračun i vizualizacija povrata te volatilnosti
     pokreni_skriptu("Računanje_prinosa.py")
     pokreni_skriptu("Računanje_volatilnosti.py")
     pokreni_skriptu("Rolling_volatilnost_i_prikaz.py")
     
-    # 4. KORAK: Tehnička analiza i indikatori
-    # (Možeš dodati i ostale indikatore koje želiš pokrenuti)
+    # Tehnička analiza i indikatori
     pokreni_skriptu("Jednostavni_pokretni_prosjeci.py")
     pokreni_skriptu("EMA_indikator.py")
     pokreni_skriptu("RSI.py")
     pokreni_skriptu("MACD_indikator.py")
     pokreni_skriptu("Bollingerove_trake.py")
     
-    # 5. KORAK: Napredne vizualizacije (Korelacija, Sezonalnost, Histogram)
+    # Napredne vizualizacije (Korelacija, Sezonalnost, Histogram)
     pokreni_skriptu("Korelacijska_matrica.py")
     pokreni_skriptu("Analiza_sezonalnosti.py")
     pokreni_skriptu("Histogram_dnevnih_prinosa.py")
