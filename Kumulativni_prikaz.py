@@ -1,6 +1,4 @@
-import matplotlib.pyplot as plt
-
-# Nacrtaj linijski grafikon
+# Linijski grafikon
 Cum_return.plot(kind='line', figsize=(12, 6), linewidth=1.5)
 
 plt.title("Kumulativni rast", fontsize=14, fontweight='bold')
