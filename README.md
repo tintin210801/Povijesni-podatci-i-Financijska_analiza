@@ -1,4 +1,4 @@
-##**Projekt 1:** 
+#Projekt 1:
 Analiza povijesnih podataka, uređenje podataka i osnovni tehnički indikatori
 
 Ovaj projekt automatski preuzima povijesne podatke za odabrane financijske instrumente te podatke uređeje zatim provodi detaljnu statističku i tehničku analizu.
