@@ -1,8 +1,4 @@
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
-# 1. EMA INDIKATORI (Računaju se iz Price_btc)
+# EMA INDIKATORI (Računaju se iz Price_btc)
 EMA_20 = Price_btc.ewm(span=20, adjust=False).mean()
 EMA_50 = Price_btc.ewm(span=50, adjust=False).mean()
 
