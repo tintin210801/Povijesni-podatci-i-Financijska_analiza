@@ -5,7 +5,7 @@ volumeni = Data['Volume']
 
 korelacijska_matrica_cijena = cijene.corr()
 korelacijska_matrica_volumena = volumeni.corr()
-# Toplinska mapa (Heatmap)
+# Toplinska mapa (Heatmap) korelacija cijena
 plt.figure(figsize=(10, 6))
 
 # 'annot=True' ispisuje točne brojeve korelacije u svakom kvadratiću
@@ -23,6 +23,7 @@ plt.title("Korelacijska matrica cijena", fontsize=14, fontweight='bold')
 plt.tight_layout()
 plt.show()
 plt.figure(figsize=(10, 6))
+# Toplinska mapa (Heatmap) korelacija volumena
 sns.heatmap(
     korelacijska_matrica_volumena, 
     annot=True, 
@@ -35,7 +36,7 @@ plt.title("Korelacijska matrica volumena", fontsize=14, fontweight='bold')
 plt.tight_layout()
 plt.show()
 
-
+# Toplinska mapa (Heatmap) korelacija cijena i volumena kombinirano
 # Spojit ćemo ih tako da preimenujemo stupce kako bismo znali što je što
 # npr. 'BTC-USD_Price' i 'BTC-USD_Volume'
 kombinirano = cijene.join(volumeni, lsuffix='_Price', rsuffix='_Volume')
