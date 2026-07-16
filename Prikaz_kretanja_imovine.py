@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 ticker_1 = 'ASML'
 ticker_2 = 'ETH-USD'
 ticker_3 = 'SPY'
