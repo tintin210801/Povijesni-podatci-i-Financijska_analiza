@@ -7,7 +7,7 @@ Ovaj projekt automatski preuzima povijesne podatke za odabrane financijske instr
 * **Dionice / Indeksi:** SPY, GOOGL, ASML, TSM
 
 **Mogućnosti Projekta**
-* **Automatsko dohvaćanje podataka:** Preuzimanje najnovijih podataka (OHLCV) do današnjeg dana koristeći preko yahoo finance.
+* **Automatsko dohvaćanje podataka:** Preuzimanje najnovijih podataka (OHLCV) do današnjeg dana koristeći yahoo finance.
 * **Statistička analiza:** Izračunavanje osnovnih statistika (Maksimum, Minimum, Prosjek, Medijan, Standardnu devijaciju), ispisuje ih u tablicu te analiza strukture podataka.
 * **Izračun prinosa i volatilnosti:** Računa više vrsta prinosa (Jednostavni, logaritamski, kumulativni) i volatilnost (dnevnu, godišnju i rolling).
 * **Tehnički indikatori:** Izračun i vizualizacija pokretnih prosjeka (SMA, EMA), RSI-ja, MACD-a, Bollingerovih traka, te njihova vizualizacija na grafikonima.
