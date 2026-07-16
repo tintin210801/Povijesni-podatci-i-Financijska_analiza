@@ -1,6 +1,5 @@
 #Histogram dnevnih prinosa na primjeru ASML-a
-import matplotlib.pyplot as plt
-import seaborn as sns  # Seaborn koristimo za ljepši izgled i krivulju gustoće (KDE)
+# Seaborn koristimo za ljepši izgled i krivulju gustoće (KDE)
 
 # Izračun dnevnih povrat< i brisanje NaN vrijednosti
 odabrani_ticker = 'ETH-USD'
