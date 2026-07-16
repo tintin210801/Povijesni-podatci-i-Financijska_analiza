@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 # Bollingerove trake
 # Srednja traka (Jednostavni pomični prosjek - SMA 20)
 BB_middle_btc = Price_btc.rolling(window=50).mean()
