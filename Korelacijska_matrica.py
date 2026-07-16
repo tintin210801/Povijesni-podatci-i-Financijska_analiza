@@ -1,14 +1,11 @@
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# 1. Izvuci cijene zatvaranja i volumen za odabrane tickere
-# (Kreiramo novu tablicu u kojoj su stupci jasno definirani)
+# Izvuci cijene zatvaranja i volumen za odabrane tickere
+# (Radimo novu tablicu u kojoj su stupci jasno definirani)
 cijene = Data['Close']
 volumeni = Data['Volume']
 
 korelacijska_matrica_cijena = cijene.corr()
 korelacijska_matrica_volumena = volumeni.corr()
-# 3. Nacrtaj toplinsku mapu (Heatmap)
+# Toplinska mapa (Heatmap)
 plt.figure(figsize=(10, 6))
 
 # 'annot=True' ispisuje točne brojeve korelacije u svakom kvadratiću
@@ -43,10 +40,10 @@ plt.show()
 # npr. 'BTC-USD_Price' i 'BTC-USD_Volume'
 kombinirano = cijene.join(volumeni, lsuffix='_Price', rsuffix='_Volume')
 
-# 2. Izračunaj korelacijsku matricu
+# Izračun korelacijske matrice
 korelacijska_matrica = kombinirano.corr()
 
-# 3. Nacrtaj toplinsku mapu (Heatmap)
+# Vizualizacija toplinske mape (Heatmap)
 plt.figure(figsize=(12, 10))
 
 # 'annot=True' ispisuje točne brojeve korelacije u svakom kvadratiću
