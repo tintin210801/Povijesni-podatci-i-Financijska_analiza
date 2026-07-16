@@ -1,6 +1,12 @@
-
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+# Učitavanje spremljenih podataka
+Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
+Data = Data['Close'].ffill().bfill()
 # Izračun dnevnih povrata
-Returns = Data['Close'].pct_change()
+Returns = Data.pct_change()
 
 # Izračun rolling volatilnosti (standardnu devijaciju) za prozor od 25 dana
 # Množimo s np.sqrt(252) kako bismo je "anualizirali" (prikazali na godišnjoj razini, što je standard u financijama)
@@ -29,3 +35,7 @@ plt.legend(loc='upper left')
 # Automatsko prilagođavanje i prikaz
 plt.tight_layout()
 plt.show()
+# Sprema grafikon kao sliku u tvoj projekt
+plt.savefig("rolling_volatilnost.png", dpi=300, bbox_inches='tight')
+print("Grafikon je uspješno spremljen kao 'rolling_volatilnost.png'!")
+plt.close()

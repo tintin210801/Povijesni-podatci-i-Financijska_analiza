@@ -1,3 +1,11 @@
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+# Učitavanje spremljenih podataka
+Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
+Price = Data['Close'].ffill().bfill()
+Price_btc = Price["BTC-USD"]
 # Bollingerove trake
 # Srednja traka (Jednostavni pomični prosjek - SMA 20)
 BB_middle_btc = Price_btc.rolling(window=50).mean()
@@ -67,3 +75,7 @@ plt.legend(loc="upper left")
 
 # Prikaz grafikona
 plt.show()
+# Sprema grafikon kao sliku u tvoj projekt
+plt.savefig("Bollingerove trake.png", dpi=300, bbox_inches='tight')
+print("Grafikon je uspješno spremljen kao 'Bollingerove trake.png'!")
+plt.close()

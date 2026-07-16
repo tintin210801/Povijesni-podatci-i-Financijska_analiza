@@ -1,4 +1,17 @@
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib as plt
+# Učitavanje spremljenih podataka
+Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
 # Računanje metrika prinosa i ostalih vrsti prinosa
+Price = Data['Close'].ffill().bfill()
+Price_btc = Price["BTC-USD"]
+Price_eth = Price["ETH-USD"]
+Price_spy = Price["SPY"]
+Price_googl = Price["GOOGL"]
+Price_asml = Price["ASML"]
+Price_tsm = Price["TSM"]
 Return = Price.pct_change()
 Return_btc = Price_btc.pct_change()
 Log_return = np.log(Price / Price.shift(1))

@@ -1,3 +1,10 @@
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+# Učitavanje spremljenih podataka
+Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
+Price = Data['Close'].ffill().bfill()
 # RSI indikator
 # Izračun dnevne razlike u cijeni
 delta = Price.diff()
@@ -45,3 +52,7 @@ for ticker in RSI.columns:
 
     # 5. Prikaz
     plt.show()
+# Sprema grafikon kao sliku u tvoj projekt
+plt.savefig("RSI.png", dpi=300, bbox_inches='tight')
+print("Grafikon je uspješno spremljen kao 'RSI.png'!")
+plt.close()

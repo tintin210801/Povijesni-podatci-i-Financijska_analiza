@@ -1,3 +1,11 @@
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime
+Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
+Price = Data['Close'].ffill().bfill()
 # Dnevni prinosi u postotcima za jedan ticker (npr. SPY ili BTC-USD)
 odabrani_ticker = 'GOOGL'  # Promijeni u 'BTC-USD' ako analiziraš kripto
 Prinosi = Data['Close'][odabrani_ticker].pct_change().dropna() * 100
@@ -55,3 +63,7 @@ axes[1].grid(True, linestyle=':', alpha=0.6)
 # Prilagodba i prikaz
 plt.tight_layout()
 plt.show()
+# Sprema grafikon kao sliku u tvoj projekt
+plt.savefig("Sezonalnost.png", dpi=300, bbox_inches='tight')
+print("Grafikon je uspješno spremljen kao 'Sezonalnost.png'!")
+plt.close()

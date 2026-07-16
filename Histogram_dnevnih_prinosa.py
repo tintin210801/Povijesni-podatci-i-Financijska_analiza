@@ -1,3 +1,11 @@
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Učitavanje spremljenih podataka
+Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
+
 #Histogram dnevnih prinosa na primjeru ASML-a
 # Seaborn koristimo za ljepši izgled i krivulju gustoće (KDE)
 
@@ -37,3 +45,7 @@ plt.legend(fontsize=10)
 # Prikaz grafikona
 plt.tight_layout()
 plt.show()
+# Sprema grafikon kao sliku u tvoj projekt
+plt.savefig("Histogram dnevnih prinosa.png", dpi=300, bbox_inches='tight')
+print("Grafikon je uspješno spremljen kao 'Histogram dnevnih prinosa.png'!")
+plt.close()

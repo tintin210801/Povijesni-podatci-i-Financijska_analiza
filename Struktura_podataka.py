@@ -1,3 +1,9 @@
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib as plt
+# Učitavanje spremljenih podataka
+Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
 # Priprema podataka
 Data_shape = Data.shape
 Data_columns = Data.columns

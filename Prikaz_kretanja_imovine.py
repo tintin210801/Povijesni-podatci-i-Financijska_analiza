@@ -1,3 +1,7 @@
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib as plt
 ticker_1 = 'ASML'
 ticker_2 = 'ETH-USD'
 ticker_3 = 'SPY'

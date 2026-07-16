@@ -1,3 +1,7 @@
+import yfinance as yf
+import numpy as np
+import pandas as pd
+import matplotlib as plt
 # Linijski grafikon
 Cum_return.plot(kind='line', figsize=(12, 6), linewidth=1.5)
 
