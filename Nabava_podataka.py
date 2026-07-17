@@ -2,6 +2,7 @@ import yfinance as yf
 import numpy as np
 import pandas as pd
 import matplotlib as plt
+from datetime import datetime
 #Povijesni podatci i njihovo uređenje
 #Preuzimanje i obrada cijena nekoliko imovina te izrada čitljivih statističkih izvještaja
 Tickers = ['BTC-USD', 'ETH-USD', 'SPY', 'GOOGL', 'ASML', 'TSM']

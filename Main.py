@@ -45,9 +45,11 @@ def main():
     pokreni_skriptu("Korelacijska_matrica.py")
     pokreni_skriptu("Analiza_sezonalnosti.py")
     pokreni_skriptu("Histogram_dnevnih_prinosa.py")
+    # Spremanje u excel izvještaj
+    pokreni_skriptu("Izvoz_excel.py")
 
     print("\n" + "=" * 60)
-    print(" [ZAVRŠENO] Cijeli pipeline je uspješno izvršen!")
+    print(" [ZAVRŠENO] Cijela skripta je uspješno izvršena!")
     print("=" * 60)
 
 if __name__ == "__main__":
