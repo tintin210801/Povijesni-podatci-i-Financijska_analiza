@@ -1,0 +1,297 @@
+import os
+import pandas as pd
+import numpy as np
+import openpyxl
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
+
+def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izvjestaj.xlsx"):
+    if not os.path.exists(csv_path):
+        print(f"[GREŠKA] Datoteka {csv_path} ne postoji. Prvo pokreni Nabava_podataka.py!")
+        return
+
+    print("[POKRETANJE] Generiranje Excel izvještaja...")
+    
+    # Učitavanje podataka i rješavanje MultiIndex formata iz yfinance-a
+    try:
+        df = pd.read_csv(csv_path, header=[0, 1], index_col=0, parse_dates=True)
+    except Exception:
+        df = pd.read_csv(csv_path, index_col=0, parse_dates=True)
+    
+    # Izdvajanje cijena zatvaranja ('Close')
+    if isinstance(df.columns, pd.MultiIndex):
+        if 'Close' in df.columns.levels[0]:
+            df_prices = df['Close'].ffill().bfill()
+        else:
+            df_prices = df.ffill().bfill()
+    else:
+        df_prices = df.ffill().bfill()
+
+    tickers = list(df_prices.columns)
+    df_returns = df_prices.pct_change().dropna()
+    dates = df_prices.index
+
+    # Inicijalizacija Excel radne knjige
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)  # Ukloni zadani prazni list
+
+    # Stilovi (Cool Tech Palette: Tamnoplava i Siva)
+    HEADER_BG = "203764"      # Tamnoplava
+    HEADER_FG = "FFFFFF"      # Bijela
+    ACCENT_BG = "D9E1F2"      # Svijetlo plava (ledena)
+    ZEBRA_BG = "F2F2F2"       # Svijetlo siva
+    BORDER_COLOR = "D9D9D9"   # Siva za obrube
+
+    font_title = Font(name="Arial", size=16, bold=True, color="203764")
+    font_subtitle = Font(name="Arial", size=10, italic=True, color="595959")
+    font_section = Font(name="Arial", size=12, bold=True, color="203764")
+    font_header = Font(name="Arial", size=10, bold=True, color=HEADER_FG)
+    font_bold = Font(name="Arial", size=10, bold=True)
+    font_regular = Font(name="Arial", size=10)
+
+    fill_header = PatternFill(start_color=HEADER_BG, end_color=HEADER_BG, fill_type="solid")
+    fill_accent = PatternFill(start_color=ACCENT_BG, end_color=ACCENT_BG, fill_type="solid")
+    fill_zebra = PatternFill(start_color=ZEBRA_BG, end_color=ZEBRA_BG, fill_type="solid")
+
+    thin_side = Side(border_style="thin", color=BORDER_COLOR)
+    border_all = Border(left=thin_side, right=thin_side, top=thin_side, bottom=thin_side)
+    border_bottom_double = Border(bottom=Side(border_style="double", color="203764"), top=thin_side)
+
+    align_center = Alignment(horizontal="center", vertical="center")
+    align_right = Alignment(horizontal="right", vertical="center")
+
+    # ==========================================
+    # TAB 1: PREGLED IZVJEŠTAJA (DASHBOARD)
+    # ==========================================
+    ws1 = wb.create_sheet(title="Pregled Izvještaja")
+    ws1.views.sheetView[0].showGridLines = True
+
+    ws1["A1"] = "FINANCIJSKI IZVJEŠTAJ - PORTFOLIO ANALIZA"
+    ws1["A1"].font = font_title
+    ws1["A2"] = "Automatski generirano iz baze podataka 'podaci.csv'"
+    ws1["A2"].font = font_subtitle
+
+    ws1["A4"] = "Ključne Metrike Analizirane Imovine"
+    ws1["A4"].font = font_section
+
+    # Zaglavlje KPI tablice
+    headers_kpi = ["Metrika / Ticker"] + tickers
+    for col_idx, text in enumerate(headers_kpi, start=1):
+        cell = ws1.cell(row=5, column=col_idx, value=text)
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = align_center
+        cell.border = border_all
+
+    # Izračuni u Pythonu za prikaz na Dashboardu
+    pocetne = [df_prices[t].iloc[0] for t in tickers]
+    zadnje = [df_prices[t].iloc[-1] for t in tickers]
+    ukupni_povrati = [((df_prices[t].iloc[-1] / df_prices[t].iloc[0]) - 1) for t in tickers]
+    prosjecni_dnevni = [df_returns[t].mean() for t in tickers]
+    dnevna_vol = [df_returns[t].std() for t in tickers]
+    anualizirana_vol = [df_returns[t].std() * np.sqrt(252) for t in tickers]
+
+    kpi_data = [
+        ("Početna cijena", pocetne, "$#,##0.00"),
+        ("Zadnja cijena", zadnje, "$#,##0.00"),
+        ("Ukupni povrat (%)", ukupni_povrati, "0.00%"),
+        ("Prosječni dnevni prinos", prosjecni_dnevni, "0.000%"),
+        ("Dnevna volatilnost (Std Dev)", dnevna_vol, "0.000%"),
+        ("Anualizirana volatilnost", anualizirana_vol, "0.00%"),
+    ]
+
+    for row_idx, (metric, values, num_format) in enumerate(kpi_data, start=6):
+        cell_metric = ws1.cell(row=row_idx, column=1, value=metric)
+        cell_metric.font = font_bold if "Ukupni" in metric else font_regular
+        cell_metric.border = border_all
+        if row_idx % 2 == 1:
+            cell_metric.fill = fill_zebra
+            
+        for val_idx, val in enumerate(values, start=2):
+            cell_val = ws1.cell(row=row_idx, column=val_idx, value=val)
+            cell_val.font = font_bold if "Ukupni" in metric else font_regular
+            cell_val.number_format = num_format
+            cell_val.alignment = align_right
+            cell_val.border = border_all
+            if row_idx % 2 == 1:
+                cell_val.fill = fill_zebra
+
+    # Dvostruka crta na dnu KPI tablice
+    for col_idx in range(1, len(tickers) + 2):
+        ws1.cell(row=12, column=col_idx).border = border_bottom_double
+
+    # Opis projekta
+    ws1["A14"] = "Struktura i opis Data Pipeline-a"
+    ws1["A14"].font = font_section
+
+    desc_text = [
+        "Ovaj Excel izvještaj generiran je potpuno automatski unutar vašeg Python projekta.",
+        "Sustav povlači podatke s Yahoo Finance API-ja, strukturira ih i zapisuje u 'podaci.csv'.",
+        "Nakon toga, ovaj modul (Izvoz_u_excel.py) pretvara te sirove podatke u vizualno privlačan",
+        "i profesionalan poslovni izvještaj s ugrađenim Excel formulama.",
+        "",
+        "Struktura tabova:",
+        "  1. Pregled Izvještaja - Ključne metrike i performanse.",
+        "  2. Povijesni Podaci - Kompletna baza povijesnih cijena s dinamičkim izračunom prinosa.",
+        "  3. Statistika i Korelacija - Analiza korelacija među imovinama i deskriptivna statistika."
+    ]
+
+    for idx, line in enumerate(desc_text, start=15):
+        ws1.cell(row=idx, column=1, value=line).font = font_regular
+
+    # ==========================================
+    # TAB 2: POVIJESNI PODACI
+    # ==========================================
+    ws2 = wb.create_sheet(title="Povijesni Podaci")
+    ws2.views.sheetView[0].showGridLines = True
+
+    ws2["A1"] = "Povijesne Cijene i Dnevni Prinosi"
+    ws2["A1"].font = font_title
+
+    # Dinamičko kreiranje zaglavlja ovisno o tickerima u CSV-u
+    headers_data = ["Datum"]
+    for t in tickers:
+        headers_data.extend([f"{t} Price", f"{t} Return"])
+
+    for col_idx, text in enumerate(headers_data, start=1):
+        cell = ws2.cell(row=3, column=col_idx, value=text)
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = align_center
+        cell.border = border_all
+
+    # Upisivanje povijesnih podataka u ćelije s formulama za prinos
+    for row_idx, date in enumerate(dates, start=4):
+        c_date = ws2.cell(row=row_idx, column=1, value=date.strftime("%Y-%m-%d"))
+        c_date.alignment = align_center
+        c_date.border = border_all
+        
+        col_counter = 2
+        for t_idx, t in enumerate(tickers):
+            price = df_prices.loc[date, t]
+            
+            # Cijena
+            c_price = ws2.cell(row=row_idx, column=col_counter, value=price)
+            c_price.number_format = "$#,##0.00"
+            c_price.border = border_all
+            
+            # Prinos (Excel formula)
+            c_ret = ws2.cell(row=row_idx, column=col_counter + 1)
+            if row_idx == 4:
+                c_ret.value = "-"
+                c_ret.alignment = align_center
+            else:
+                prev_row = row_idx - 1
+                p_letter = get_column_letter(col_counter)
+                c_ret.value = f"=({p_letter}{row_idx}-{p_letter}{prev_row})/{p_letter}{prev_row}"
+                c_ret.number_format = "0.00%"
+                c_ret.alignment = align_right
+            c_ret.border = border_all
+            
+            if row_idx % 2 == 1:
+                c_price.fill = fill_zebra
+                c_ret.fill = fill_zebra
+                
+            col_counter += 2
+
+    # ==========================================
+    # TAB 3: STATISTIKA I KORELACIJA
+    # ==========================================
+    ws3 = wb.create_sheet(title="Statistika i Korelacija")
+    ws3.views.sheetView[0].showGridLines = True
+
+    ws3["A1"] = "Statistička Analiza i Matrica Korelacije"
+    ws3["A1"].font = font_title
+
+    ws3["A3"] = "Korelacija Dnevnih Prinosa"
+    ws3["A3"].font = font_section
+
+    corr_headers = ["Ticker"] + tickers
+    for col_idx, text in enumerate(corr_headers, start=1):
+        cell = ws3.cell(row=4, column=col_idx, value=text)
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = align_center
+        cell.border = border_all
+
+    corr_matrix = df_returns.corr()
+    for r_idx, t_row in enumerate(tickers, start=5):
+        cell_r = ws3.cell(row=r_idx, column=1, value=t_row)
+        cell_r.font = font_bold
+        cell_r.border = border_all
+        for c_idx, t_col in enumerate(tickers, start=2):
+            corr_val = corr_matrix.loc[t_row, t_col]
+            cell_val = ws3.cell(row=r_idx, column=c_idx, value=corr_val)
+            cell_val.number_format = "0.00"
+            cell_val.border = border_all
+            cell_val.alignment = align_right
+            
+            if t_row == t_col:
+                cell_val.fill = fill_accent
+            elif corr_val > 0.5:
+                cell_val.fill = PatternFill(start_color="E2EFDA", end_color="E2EFDA", fill_type="solid")
+            elif corr_val < 0.2:
+                cell_val.fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+
+    # Deskriptivna statistika preko Excel formula
+    ws3["A10"] = "Deskriptivna Statistika (Preko Excel Formula)"
+    ws3["A10"].font = font_section
+
+    stats_headers = ["Metrika"] + tickers
+    for col_idx, text in enumerate(stats_headers, start=1):
+        cell = ws3.cell(row=11, column=col_idx, value=text)
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = align_center
+        cell.border = border_all
+
+    last_row = len(dates) + 3
+    stats_rows = [
+        ("Broj opservacija", "COUNT", "0"),
+        ("Maksimalna cijena", "MAX", "$#,##0.00"),
+        ("Minimalna cijena", "MIN", "$#,##0.00"),
+        ("Prosječni dnevni prinos", "AVERAGE", "0.00%"),
+        ("Dnevna volatilnost (Std Dev)", "STDEV.S", "0.00%"),
+    ]
+
+    for r_idx, (metric, formula_name, num_fmt) in enumerate(stats_rows, start=12):
+        cell_metric = ws3.cell(row=r_idx, column=1, value=metric)
+        cell_metric.font = font_bold
+        cell_metric.border = border_all
+        if r_idx % 2 == 1:
+            cell_metric.fill = fill_zebra
+            
+        for t_idx, t in enumerate(tickers):
+            price_col_letter = get_column_letter(2 + t_idx * 2)
+            return_col_letter = get_column_letter(3 + t_idx * 2)
+            
+            if formula_name in ["COUNT", "MAX", "MIN"]:
+                formula = f"={formula_name}('Povijesni Podaci'!{price_col_letter}4:{price_col_letter}{last_row})"
+            else:
+                formula = f"={formula_name}('Povijesni Podaci'!{return_col_letter}5:{return_col_letter}{last_row})"
+                
+            cell_val = ws3.cell(row=r_idx, column=2 + t_idx, value=formula)
+            cell_val.number_format = num_fmt
+            cell_val.alignment = align_right
+            cell_val.border = border_all
+            if r_idx % 2 == 1:
+                cell_val.fill = fill_zebra
+
+    # Automatsko podešavanje širine stupaca
+    for ws in wb.worksheets:
+        for col in ws.columns:
+            max_len = 0
+            col_letter = get_column_letter(col[0].column)
+            for cell in col:
+                val_str = str(cell.value or '')
+                if val_str.startswith('='):
+                    val_str = "Formula_Length_Est"
+                if len(val_str) > max_len:
+                    max_len = len(val_str)
+            ws.column_dimensions[col_letter].width = max(max_len + 3, 12)
+
+    wb.save(excel_path)
+    print(f"[USPJEH] Excel izvještaj je spremljen pod: {excel_path}")
+
+if __name__ == "__main__":
+    generiraj_excel_izvjestaj()
