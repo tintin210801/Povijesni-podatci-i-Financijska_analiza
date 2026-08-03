@@ -3,10 +3,10 @@ Analiza povijesnih podataka, uređenje podataka i osnovni tehnički indikatori
 
 Ovaj projekt automatski preuzima povijesne podatke za odabrane financijske instrumente te podatke uređuje zatim provodi statističku i tehničku analizu.
 
-** POKRETANJE SKRIPTE**
+**POKRETANJE SKRIPTE**
 Samo pokrenite main.py skriptu i ona će automatski sve riješiti.
 
-** MIJENJANJE IMOVINE**
+**MIJENJANJE IMOVINE**
 S obzirom da su podatci preuzeti s Yahoo Finance-a, treba pronaći naziv tickera odnosno kratice imovine s Yahooa. Tickere možete mijenjati ručno u datoteci Nabava_podataka.py.
 Izbrišite, ostavite ili nadodajte neke nove, ovisno o vašim željama.
 Program će izbacivati grešku ili će preskočiti određeni ticker ako je krivo kratica napisana ili ako ga nema na Yahoo Finance-u
