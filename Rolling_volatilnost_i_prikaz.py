@@ -2,40 +2,37 @@ import yfinance as yf
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-# Učitavanje spremljenih podataka
+
+# Učitavanje podataka
 Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
 Data = Data['Close'].ffill().bfill()
-# Izračun dnevnih povrata
+tickers = Data.columns.tolist()
+
+# Izračun rolling volatilnosti
 Returns = Data.pct_change()
+rolling_vol = Returns.rolling(window=25).std() * np.sqrt(252) * 100
 
-# Izračun rolling volatilnosti (standardnu devijaciju) za prozor od 25 dana
-# Množimo s np.sqrt(252) kako bismo je "anualizirali" (prikazali na godišnjoj razini, što je standard u financijama)
-import numpy as np
-rolling_vol = Returns.rolling(window=25).std() * np.sqrt(252) * 100  # Prikaz u postotcima (%)
+# Podgrafovi za sve tickere
+n = len(tickers)
+cols = 2
+rows = (n + cols - 1) // cols
 
-# Odabir imovine za prikaz
-ticker_1 = 'BTC-USD'
-ticker_2 = 'SPY'
-ticker_3 = 'ETH-USD'
-# Grafikon
-plt.figure(figsize=(12, 6))
+fig, axes = plt.subplots(rows, cols, figsize=(15, 4*rows))
+axes = axes.flatten() if n > 1 else [axes]
 
-# Koristimo laganu prozirnost (alpha=0.8) kako bi se linije ljepše preklapale
-plt.plot(rolling_vol[ticker_1], label=f'{ticker_1} (25-day Rolling Volatility)', color='orange', linewidth=1.5, alpha=0.8)
-plt.plot(rolling_vol[ticker_2], label=f'{ticker_2} (25-day Rolling Volatility)', color='navy', linewidth=1.5, alpha=0.8)
-plt.plot(rolling_vol[ticker_3], label=f'{ticker_3} (25-day Rolling Volatility)', color='red', linewidth=1.5, alpha=0.8)
+for i, ticker in enumerate(tickers):
+    if i < n:
+        axes[i].plot(rolling_vol[ticker], color='orange', linewidth=1.5)
+        axes[i].axhline(rolling_vol[ticker].mean(), color='red', linestyle='--', linewidth=0.8, alpha=0.5)
+        axes[i].set_title(ticker, fontsize=10, fontweight='bold')
+        axes[i].grid(True, linestyle=':', alpha=0.5)
+        axes[i].set_ylabel('Vol (%)', fontsize=8)
 
-# Estetika i označavanje turbulencija
-plt.title("Rolling Volatilnost kroz vrijeme (Godišnja, 25-dnevni prozor)", fontsize=14, fontweight='bold')
-plt.xlabel("Datum", fontsize=12)
-plt.ylabel("Volatilnost (%)", fontsize=12)
-plt.grid(True, linestyle=':', alpha=0.6)
-plt.legend(loc='upper left')
+# Sakrij prazne podgrafove
+for j in range(i+1, len(axes)):
+    axes[j].axis('off')
 
-# Automatsko prilagođavanje i prikaz
 plt.tight_layout()
+plt.savefig("rolling_volatilnost_podgrafovi.png", dpi=300, bbox_inches='tight')
+print("Grafikon spremljen kao 'rolling_volatilnost_podgrafovi.png'")
 plt.show()
-# Sprema grafikon kao sliku u tvoj projekt
-plt.savefig("rolling_volatilnost.png", dpi=300, bbox_inches='tight')
-print("Grafikon je uspješno spremljen kao 'rolling_volatilnost.png'!")
-plt.close()

@@ -2,57 +2,45 @@ import yfinance as yf
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-# Učitavanje spremljenih podataka
+
+# Učitavanje podataka
 Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
 Price = Data['Close'].ffill().bfill()
-# RSI indikator
-# Izračun dnevne razlike u cijeni
-delta = Price.diff()
+tickers = Price.columns.tolist()
 
-# Dobitci i gubitci
+# RSI izračun
+delta = Price.diff()
 gain = delta.clip(lower=0)
 loss = -delta.clip(upper=0)
-
-# Eksponencijalni prosjek (EMA) za dobitke i gubitke
 avg_gain = gain.ewm(com=13, adjust=False).mean()
 avg_loss = loss.ewm(com=13, adjust=False).mean()
-
-# Izračun relativne snage (RS) i RSI
 rs = avg_gain / avg_loss
 RSI = 100 - (100 / (1 + rs))
 
-# Primjer dohvaćanja RSI-a za jednu imovinu i cjelokupnu imovinu
-print(RSI['BTC-USD'].tail())
-print(RSI.tail())
+# Podgrafovi za sve tickere
+n = len(tickers)
+cols = 2
+rows = (n + cols - 1) // cols
 
-# Prolazimo kroz svaki stupac imovine pojedinačno
-for ticker in RSI.columns:
-    #Otvaramo novi, zasebni prozor za grafikon
-    plt.figure(figsize=(12, 5))
+fig, axes = plt.subplots(rows, cols, figsize=(15, 4*rows))
+axes = axes.flatten() if n > 1 else [axes]
 
-    # Crtamo liniju samo za trenutnu imovinu
-    plt.plot(RSI.index, RSI[ticker], label=ticker, color="blue", linewidth=1.5)
+for i, ticker in enumerate(tickers):
+    if i < n:
+        axes[i].plot(RSI.index, RSI[ticker], color="blue", linewidth=1)
+        axes[i].axhline(70, color="red", linestyle="--", alpha=0.5, linewidth=0.8)
+        axes[i].axhline(30, color="green", linestyle="--", alpha=0.5, linewidth=0.8)
+        axes[i].axhline(50, color="gray", linestyle=":", alpha=0.3, linewidth=0.5)
+        axes[i].set_ylim(10, 90)
+        axes[i].set_title(ticker, fontsize=10, fontweight='bold')
+        axes[i].grid(True, linestyle=":", alpha=0.5)
+        axes[i].set_ylabel('RSI', fontsize=8)
 
-    # RSI granice (70 i 30)
-    plt.axhline(70, color="red", linestyle="--", alpha=0.5, label="Overbought (70)")
-    plt.axhline(30, color="green", linestyle="--", alpha=0.5, label="Oversold (30)")
+# Sakrij prazne podgrafove
+for j in range(i+1, len(axes)):
+    axes[j].axis('off')
 
-    # Uređivanje izgleda grafikona
-    plt.title(
-        f"Indeks relativne snage (RSI) - {ticker}",
-        fontsize=14,
-        fontweight="bold",
-    )
-    plt.xlabel("Datum", fontsize=10)
-    plt.ylabel("RSI Vrijednost (0-100)", fontsize=10)
-    plt.ylim(10, 90)  # Ograničavamo Y os radi bolje vidljivosti
-
-    plt.grid(True, linestyle=":", alpha=0.6)
-    plt.legend(loc="upper left")
-
-    # 5. Prikaz
-    plt.show()
-# Sprema grafikon kao sliku u tvoj projekt
-plt.savefig("RSI.png", dpi=300, bbox_inches='tight')
-print("Grafikon je uspješno spremljen kao 'RSI.png'!")
-plt.close()
+plt.tight_layout()
+plt.savefig("Svi_tickeri_RSI.png", dpi=300, bbox_inches='tight')
+print("Grafikon spremljen kao 'Svi_tickeri_RSI.png'")
+plt.show()

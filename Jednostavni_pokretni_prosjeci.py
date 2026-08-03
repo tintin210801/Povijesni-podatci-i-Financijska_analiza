@@ -2,44 +2,48 @@ import yfinance as yf
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-# Učitavanje spremljenih podataka
+
+# Učitavanje podataka
 Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
 Price = Data['Close'].ffill().bfill()
-Price_btc = Price['BTC-USD']
-# Računanje jednostavnih pokretnih prosjeka pomoću 'Close' cijene
-# Pokretni prosjeci od 10, 20, 50, 100, 200 SMA
-SMA10 = Price_btc.rolling(10).mean()
-SMA20 = Price_btc.rolling(20).mean()
-SMA50 = Price_btc.rolling(50).mean()
-SMA100 = Price_btc.rolling(100).mean()
-SMA200 = Price_btc.rolling(200).mean() 
-# Grafikon i veličina
-plt.figure(figsize=(14, 7))
+tickers = Price.columns.tolist()
 
-#Cijena (malo deblja i tamnija linija)
-plt.plot(Price_btc, label='Stvarna cijena (Close)', color='black', linewidth=1.8, alpha=0.8)
+# Podgrafovi za sve tickere
+n = len(tickers)
+cols = 2
+rows = (n + cols - 1) // cols
 
-# Svi pokretni prosjeci (različite boje i tanje linije)
-plt.plot(SMA10, label='SMA 10', color='blue', linewidth=1, linestyle='--')
-plt.plot(SMA20, label='SMA 20', color='orange', linewidth=1)
-plt.plot(SMA50, label='SMA 50', color='green', linewidth=1)
-plt.plot(SMA100, label='SMA 100', color='red', linewidth=1.2)
-plt.plot(SMA200, label='SMA 200', color='purple', linewidth=1.5)
+fig, axes = plt.subplots(rows, cols, figsize=(15, 5*rows))
+axes = axes.flatten() if n > 1 else [axes]
 
-# Estetsko uređivanje grafikona
-plt.title(f"Tehnička analiza za BTC, Pokretni prosjeci (SMA)", fontsize=14, fontweight='bold')
-plt.xlabel("Datum", fontsize=12)
-plt.ylabel("Cijena u USD", fontsize=12)
+for i, ticker in enumerate(tickers):
+    if i < n:
+        Price_current = Price[ticker]
+        
+        # SMA izračuni
+        SMA10 = Price_current.rolling(10).mean()
+        SMA20 = Price_current.rolling(20).mean()
+        SMA50 = Price_current.rolling(50).mean()
+        SMA100 = Price_current.rolling(100).mean()
+        SMA200 = Price_current.rolling(200).mean()
+        
+        # Crtanje
+        axes[i].plot(Price_current.index, Price_current, color='black', linewidth=1, alpha=0.7, label='Cijena')
+        axes[i].plot(SMA10.index, SMA10, color='blue', linewidth=0.8, linestyle='--', label='SMA10')
+        axes[i].plot(SMA20.index, SMA20, color='orange', linewidth=0.8, label='SMA20')
+        axes[i].plot(SMA50.index, SMA50, color='green', linewidth=0.8, label='SMA50')
+        axes[i].plot(SMA100.index, SMA100, color='red', linewidth=0.8, label='SMA100')
+        axes[i].plot(SMA200.index, SMA200, color='purple', linewidth=0.8, label='SMA200')
+        
+        axes[i].set_title(ticker, fontsize=10, fontweight='bold')
+        axes[i].grid(True, linestyle=':', alpha=0.5)
+        axes[i].legend(loc='upper left', fontsize=6)
 
-# Legenda da znaš koja je koja linija
-plt.legend(loc='upper left', fontsize=10)
+# Sakrij prazne podgrafove
+for j in range(i+1, len(axes)):
+    axes[j].axis('off')
 
-# Rešetka u pozadini radi lakšeg čitanja vrijednosti
-plt.grid(True, linestyle=':', alpha=0.6)
-
-# Prikaži grafikon
+plt.tight_layout()
+plt.savefig("Svi_tickeri_SMA.png", dpi=300, bbox_inches='tight')
+print("Grafikon spremljen kao 'Svi_tickeri_SMA.png'")
 plt.show()
-# Sprema grafikon kao sliku 
-plt.savefig("SMA.png", dpi=300, bbox_inches='tight')
-print("Grafikon je uspješno spremljen kao 'SMA.png'!")
-plt.close()
