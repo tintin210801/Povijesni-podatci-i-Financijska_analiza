@@ -428,16 +428,17 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
 
     # Popis svih slika koje projekt generira
     popis_slika = [
-        "Bollingerove trake.png",
-        "EMA.png",
-        "Histogram dnevnih prinosa.png",
+        "Svi_tickeri_Bollinger_kompletno.png",
+        "Svi_tickeri_EMA.png",
+        "Svi_tickeri_histogrami.png",
         "Korelacijska matrica cijene.png",
         "Kumulativni prikaz.png",
-        "MACD.png",
-        "rolling_volatilnost.png",
-        "RSI.png",
-        "Sezonalnost.png",
-        "SMA.png"
+        "Svi_tickeri_MACD.png",
+        "rolling_volatilnost_podgrafovi.png",
+        "Svi_tickeri_RSI.png",
+        "Svi_tickeri_Sezonalnost_dani.png",
+        "Svi_tickeri_Sezonalnost_mjeseci.png",
+        "Svi_tickeri_SMA.png"
     ]
 
     trenutni_red = 5

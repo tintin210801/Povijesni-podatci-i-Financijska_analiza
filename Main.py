@@ -28,7 +28,7 @@ def main():
     # Pregled strukture i izračun osnovne statistike
     pokreni_skriptu("Struktura_podataka.py")
     pokreni_skriptu("Izračun_statistike.py")
-    
+    pokreni_skriptu("Kumulativni_prikaz.py")
     # Izračun i vizualizacija povrata te volatilnosti
     pokreni_skriptu("Računanje_prinosa.py")
     pokreni_skriptu("Računanje_volatilnosti.py")
