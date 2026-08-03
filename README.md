@@ -16,3 +16,5 @@ Ovaj projekt automatski preuzima povijesne podatke za odabrane financijske instr
 * **Vizualizacija rizika:** Prikaz distribucije dnevnih prinosa (histogram) i rolling volatilnosti kroz vrijeme.
 * **Korelacijska matrica:** Prikaz korelacijske matrice cijene i volumena odvojeno te spojenu matricu cijene i volumena
 
+* **Cijeli izvještaj je generiran u Excel datoteci**
+
