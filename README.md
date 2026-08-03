@@ -14,7 +14,7 @@ Program će izbacivati grešku ili će preskočiti određeni ticker ako je krivo
 **Analizirane Imovine** (Tickeri) koje obrađuje su:
 * **Kriptovalute:** BTC-USD, ETH-USD
 * **Dionice / Indeksi:** SPY, GOOGL, ASML, TSM
-* 
+ 
 Primjeri još tickera: MSFT, TTWO, SOL-USD, AAPL, AMZN
 **ZLATO** preko Yahoo financea koristi skraćenicu GC=F što označava terminske ugovore zlata, a **Srebro** je SI=F
   
