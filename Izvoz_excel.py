@@ -205,7 +205,7 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     ws3 = wb.create_sheet(title="Statistika i Korelacija")
     ws3.views.sheetView[0].showGridLines = True
 
-    ws3["A1"] = "Statistička Analiza i Matrica Korelacije"
+    ws3["A1"] = "Statistička analiza i matrica korelacije"
     ws3["A1"].font = font_title
 
     ws3["A3"] = "Korelacija Dnevnih Prinosa"
@@ -254,7 +254,7 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
         print(f"[INFO] Heatmap primijenjen na raspon {raspon_matrice}")
 
     # Deskriptivna statistika preko Excel formula
-    ws3["A10"] = "Deskriptivna Statistika (Preko Excel Formula)"
+    ws3["A10"] = "Deskriptivna Statistika"
     ws3["A10"].font = font_section
 
     stats_headers = ["Metrika"] + tickers
