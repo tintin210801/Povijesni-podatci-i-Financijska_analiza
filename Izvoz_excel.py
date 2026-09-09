@@ -69,12 +69,12 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     ws1 = wb.create_sheet(title="Pregled Izvještaja")
     ws1.views.sheetView[0].showGridLines = True
 
-    ws1["A1"] = "FINANCIJSKI IZVJEŠTAJ - PORTFOLIO ANALIZA"
+    ws1["A1"] = "FINANCIJSKI IZVJEŠTAJ - ANALIZA"
     ws1["A1"].font = font_title
     ws1["A2"] = "Automatski generirano iz baze podataka 'podaci.csv'"
     ws1["A2"].font = font_subtitle
 
-    ws1["A4"] = "Ključne Metrike Analizirane Imovine"
+    ws1["A4"] = "Metrike analizirane imovine"
     ws1["A4"].font = font_section
 
     # Zaglavlje KPI tablice
@@ -124,21 +124,20 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
         ws1.cell(row=12, column=col_idx).border = border_bottom_double
 
     # Opis projekta
-    ws1["A14"] = "Struktura i opis Data Pipeline-a"
+    ws1["A14"] = "Struktura i opis"
     ws1["A14"].font = font_section
 
     desc_text = [
-        "Ovaj Excel izvještaj generiran je potpuno automatski unutar vašeg Python projekta.",
+        "Ovaj Excel izvještaj generiran je potpuno automatski.",
         "Sustav povlači podatke s Yahoo Finance API-ja, strukturira ih i zapisuje u 'podaci.csv'.",
-        "Nakon toga, ovaj modul (Izvoz_u_excel.py) pretvara te sirove podatke u vizualno privlačan",
-        "i profesionalan poslovni izvještaj s ugrađenim Excel formulama.",
+        "Nakon toga, ovaj modul (Izvoz_u_excel.py) pretvara te sirove podatke u poslovni izvještaj s ugrađenim Excel formulama.",
         "",
-        "Struktura tabova:",
-        "  1. Pregled Izvještaja - Ključne metrike i performanse.",
-        "  2. Povijesni Podaci - Kompletna baza povijesnih cijena s dinamičkim izračunom prinosa.",
-        "  3. Statistika i Korelacija - Analiza korelacija među imovinama i deskriptivna statistika.",
+        "Struktura radnih listova:",
+        "  1. Pregled izvještaja - Ključne metrike i performanse.",
+        "  2. Povijesni podatci - Kompletna baza povijesnih cijena s dinamičkim izračunom prinosa.",
+        "  3. Statistika i korelacija - Analiza korelacija među imovinama i deskriptivna statistika.",
         "  4. Tehnički Indikatori - SMA, RSI, MACD, Bollinger Bands.",
-        "  5. Vizualizacija - Ugrađeni grafikoni iz Python analize."
+        "  5. Vizualizacija - ugrađeni grafikoni iz Python analize."
     ]
 
     for idx, line in enumerate(desc_text, start=15):
@@ -150,7 +149,7 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     ws2 = wb.create_sheet(title="Povijesni Podaci")
     ws2.views.sheetView[0].showGridLines = True
 
-    ws2["A1"] = "Povijesne Cijene i Dnevni Prinosi"
+    ws2["A1"] = "Povijesne Cijene i dnevni prinosi"
     ws2["A1"].font = font_title
 
     # Dinamičko kreiranje zaglavlja ovisno o tickerima u CSV-u
@@ -208,7 +207,7 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     ws3["A1"] = "Statistička analiza i matrica korelacije"
     ws3["A1"].font = font_title
 
-    ws3["A3"] = "Korelacija Dnevnih Prinosa"
+    ws3["A3"] = "Korelacija dnevnih prinosa"
     ws3["A3"].font = font_section
 
     corr_headers = ["Ticker"] + tickers
@@ -303,7 +302,7 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     ws4 = wb.create_sheet(title="Tehnički Indikatori")
     ws4.views.sheetView[0].showGridLines = True
 
-    ws4["A1"] = "Tehnička Analiza i Indikatori"
+    ws4["A1"] = "Tehnička analiza i indikatori"
     ws4["A1"].font = font_title
     ws4["A2"] = "Pregled ključnih indikatora (SMA, RSI, MACD, Bollinger Bands)"
     ws4["A2"].font = font_subtitle
