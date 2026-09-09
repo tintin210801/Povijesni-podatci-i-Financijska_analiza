@@ -8,6 +8,7 @@ Samo pokrenite main.py skriptu i ona će automatski sve riješiti.
 
 **ODABIRANJE IMOVINE**
 S obzirom da su podatci preuzeti s Yahoo Finance-a, treba pronaći naziv tickera odnosno kratice imovine s Yahooa. Tickere ćete upisati prilikom pokretanja main.py skripte.
+Možete tražiti da vam analizira jedan instrument ili više.
 Program će izbacivati grešku ili će preskočiti određeni ticker ako je pogrešno napisana kratica ili ako ga nema na Yahoo Finance-u
 
 * **NAPOMENA:** **ZLATO** preko Yahoo financea koristi skraćenicu GC=F što označava terminske ugovore zlata, a **Srebro** je SI=F
