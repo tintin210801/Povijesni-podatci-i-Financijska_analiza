@@ -8,13 +8,17 @@ Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
 Price = Data['Close'].ffill().bfill()
 tickers = Price.columns.tolist()
 
-# Podgrafovi za sve tickere
+# Podgrafovi za sve tickere (robusno rješenje za n=1 ili više tickera)
 n = len(tickers)
 cols = 2
 rows = (n + cols - 1) // cols
 
 fig, axes = plt.subplots(rows, cols, figsize=(15, 5*rows))
-axes = axes.flatten() if n > 1 else [axes]
+
+if rows == 1 and cols == 1:
+    axes = np.array([axes])
+else:
+    axes = np.array(axes).flatten()
 
 for i, ticker in enumerate(tickers):
     if i < n:
@@ -46,4 +50,3 @@ for j in range(i+1, len(axes)):
 plt.tight_layout()
 plt.savefig("Svi_tickeri_SMA.png", dpi=300, bbox_inches='tight')
 print("Grafikon spremljen kao 'Svi_tickeri_SMA.png'")
-plt.show()

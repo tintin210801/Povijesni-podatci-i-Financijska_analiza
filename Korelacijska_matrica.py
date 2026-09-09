@@ -28,7 +28,6 @@ sns.heatmap(
 
 plt.title("Korelacijska matrica cijena", fontsize=14, fontweight='bold')
 plt.tight_layout()
-plt.show()
 # Sprema grafikon kao sliku u tvoj projekt
 plt.savefig("Korelacijska matrica cijene.png", dpi=300, bbox_inches='tight')
 print("Grafikon je uspješno spremljen kao 'Korelacijska matrica cijene.png'!")
@@ -46,7 +45,6 @@ sns.heatmap(
 )
 plt.title("Korelacijska matrica volumena", fontsize=14, fontweight='bold')
 plt.tight_layout()
-plt.show()
 # Sprema grafikon kao sliku u tvoj projekt
 plt.savefig("Korelacijska matrica volumena.png", dpi=300, bbox_inches='tight')
 print("Grafikon je uspješno spremljen kao 'Korelacijska matrica volumena.png'!")
@@ -77,7 +75,6 @@ sns.heatmap(
 
 plt.title("Korelacijska matrica: Cijene i Volumen", fontsize=14, fontweight='bold')
 plt.tight_layout()
-plt.show()
 # Sprema grafikon kao sliku u tvoj projekt
 plt.savefig("Korelacijska matrica cijene i volumena.png", dpi=300, bbox_inches='tight')
 print("Grafikon je uspješno spremljen kao 'Korelacijska matrica cijene i volumena.png'!")

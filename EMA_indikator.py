@@ -14,7 +14,11 @@ cols = 2
 rows = (n + cols - 1) // cols
 
 fig, axes = plt.subplots(rows, cols, figsize=(15, 5*rows))
-axes = axes.flatten() if n > 1 else [axes]
+
+if rows == 1 and cols == 1:
+    axes = np.array([axes])
+else:
+    axes = np.array(axes).flatten()
 
 for i, ticker in enumerate(tickers):
     if i < n:
@@ -51,4 +55,3 @@ for j in range(i+1, len(axes)):
 plt.tight_layout()
 plt.savefig("Svi_tickeri_EMA.png", dpi=300, bbox_inches='tight')
 print("Grafikon spremljen kao 'Svi_tickeri_EMA.png'")
-plt.show()

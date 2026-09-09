@@ -8,25 +8,27 @@ import seaborn as sns
 Data = pd.read_csv("podaci.csv", header=[0, 1], index_col=0, parse_dates=True)
 tickers = Data['Close'].columns.tolist()
 
-# Podgrafovi za sve tickere
 n = len(tickers)
 cols = 2
 rows = (n + cols - 1) // cols
 
 fig, axes = plt.subplots(rows, cols, figsize=(15, 5*rows))
-axes = axes.flatten() if n > 1 else [axes]
+if rows == 1 and cols == 1:
+    axes = np.array([axes])
+else:
+    axes = np.array(axes).flatten()
 
 for i, ticker in enumerate(tickers):
     if i < n:
-        # Izračun dnevnih prinosa
-        Prinosi = Data['Close'][ticker].pct_change().dropna()
+        Prinosi = Data['Close'][ticker].pct_change(fill_method=None).dropna()
         Prinosi_u_postotcima = Prinosi * 100
         
-        # Histogram sa seaborn (ljepši izgled)
-        sns.histplot(Prinosi_u_postotcima, bins=50, kde=True, 
-                    color='royalblue', edgecolor='black', alpha=0.7, ax=axes[i])
+        # Uklonjen problematični hue argument
+        sns.histplot(
+            data=Prinosi_u_postotcima, bins=50, kde=True, 
+            color='royalblue', edgecolor='black', alpha=0.7, ax=axes[i]
+        )
         
-        # Prosjek i medijan
         prosjek = Prinosi_u_postotcima.mean()
         medijan = Prinosi_u_postotcima.median()
         axes[i].axvline(prosjek, color='red', linestyle='--', linewidth=1.5, label=f'Mean: {prosjek:.2f}%')
@@ -38,11 +40,9 @@ for i, ticker in enumerate(tickers):
         axes[i].grid(True, linestyle=':', alpha=0.5)
         axes[i].legend(fontsize=7)
 
-# Sakrij prazne podgrafove
 for j in range(i+1, len(axes)):
     axes[j].axis('off')
 
 plt.tight_layout()
 plt.savefig("Svi_tickeri_histogrami.png", dpi=300, bbox_inches='tight')
 print("Grafikon spremljen kao 'Svi_tickeri_histogrami.png'")
-plt.show()

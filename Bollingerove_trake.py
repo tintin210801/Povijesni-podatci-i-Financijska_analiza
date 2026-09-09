@@ -40,7 +40,6 @@ for ticker in tickers:
         
         plt.savefig(f"Bollingerove_trake_{ticker}.png", dpi=300, bbox_inches='tight')
         print(f"Grafikon za {ticker} spremljen")
-        plt.show()
         plt.close()
         
     except Exception as e:
@@ -119,7 +118,6 @@ def create_subplots(tickers_list, start_idx, fig_num):
     filename = f"Podgrafovi_Bollinger_{fig_num}.png"
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     print(f"Podgrafovi spremljeni kao '{filename}'")
-    plt.show()
     plt.close()
 
 # Podijeli tickere u grupe po 6
@@ -196,7 +194,6 @@ try:
     plt.tight_layout()
     plt.savefig("Svi_tickeri_Bollinger_kompletno.png", dpi=300, bbox_inches='tight')
     print("Podgrafovi spremljeni kao 'Svi_tickeri_Bollinger_kompletno.png'")
-    plt.show()
     plt.close()
     
 except Exception as e:
@@ -233,9 +230,9 @@ try:
                 elif zadnja_cijena < zadnji_lower:
                     signal = "🟢 KUPNJA"
                 elif zadnja_cijena > zadnji_middle:
-                    signal = "🔵 BIKOVSKI"
+                    signal = "🔵 BULL"
                 else:
-                    signal = "🟠 MEDVJEĐI"
+                    signal = "🟠 BEAR"
                 
                 width = (zadnji_upper - zadnji_lower) / zadnji_middle * 100
                 
@@ -282,7 +279,6 @@ try:
         plt.tight_layout()
         plt.savefig("Bollinger_sirina_kanala.png", dpi=300, bbox_inches='tight')
         print("Grafikon širine kanala spremljen kao 'Bollinger_sirina_kanala.png'")
-        plt.show()
         plt.close()
         
 except Exception as e:

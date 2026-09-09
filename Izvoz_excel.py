@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import openpyxl
+import yfinance as yf
 import pandas_ta as ta
 from openpyxl.formatting.rule import ColorScaleRule
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
@@ -62,6 +63,7 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
 
     align_center = Alignment(horizontal="center", vertical="center")
     align_right = Alignment(horizontal="right", vertical="center")
+    align_left = Alignment(horizontal="left", vertical="center")
 
     # ==========================================
     # TAB 1: PREGLED IZVJEŠTAJA (DASHBOARD)
@@ -77,7 +79,6 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     ws1["A4"] = "Metrike analizirane imovine"
     ws1["A4"].font = font_section
 
-    # Zaglavlje KPI tablice
     headers_kpi = ["Metrika / Ticker"] + tickers
     for col_idx, text in enumerate(headers_kpi, start=1):
         cell = ws1.cell(row=5, column=col_idx, value=text)
@@ -86,7 +87,6 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
         cell.alignment = align_center
         cell.border = border_all
 
-    # Izračuni u Pythonu za prikaz na Dashboardu
     pocetne = [df_prices[t].iloc[0] for t in tickers]
     zadnje = [df_prices[t].iloc[-1] for t in tickers]
     ukupni_povrati = [((df_prices[t].iloc[-1] / df_prices[t].iloc[0]) - 1) for t in tickers]
@@ -119,25 +119,24 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
             if row_idx % 2 == 1:
                 cell_val.fill = fill_zebra
 
-    # Dvostruka crta na dnu KPI tablice
     for col_idx in range(1, len(tickers) + 2):
         ws1.cell(row=12, column=col_idx).border = border_bottom_double
 
-    # Opis projekta
     ws1["A14"] = "Struktura i opis"
     ws1["A14"].font = font_section
 
     desc_text = [
         "Ovaj Excel izvještaj generiran je potpuno automatski.",
         "Sustav povlači podatke s Yahoo Finance API-ja, strukturira ih i zapisuje u 'podaci.csv'.",
-        "Nakon toga, ovaj modul (Izvoz_u_excel.py) pretvara te sirove podatke u poslovni izvještaj s ugrađenim Excel formulama.",
+        "Nakon toga, ovaj modul pretvara sirove podatke u poslovni izvještaj.",
         "",
         "Struktura radnih listova:",
         "  1. Pregled izvještaja - Ključne metrike i performanse.",
-        "  2. Povijesni podatci - Kompletna baza povijesnih cijena s dinamičkim izračunom prinosa.",
-        "  3. Statistika i korelacija - Analiza korelacija među imovinama i deskriptivna statistika.",
-        "  4. Tehnički Indikatori - SMA, RSI, MACD, Bollinger Bands.",
-        "  5. Vizualizacija - ugrađeni grafikoni iz Python analize."
+        "  2. Povijesni podatci - Kompletna baza povijesnih cijena s prinosima.",
+        "  3. Statistika i korelacija - Matrica korelacije i deskriptivna statistika.",
+        "  4. Tehnički Indikatori - SMA (20/50/100/200), RSI, MACD, Bollinger Bands.",
+        "  5. Osnovne Informacije - Profil imovine i fundamentalni podatci s Yahoo Finance-a.",
+        "  6. Vizualizacija - Ugrađeni grafički prikazi."
     ]
 
     for idx, line in enumerate(desc_text, start=15):
@@ -152,7 +151,6 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     ws2["A1"] = "Povijesne Cijene i dnevni prinosi"
     ws2["A1"].font = font_title
 
-    # Dinamičko kreiranje zaglavlja ovisno o tickerima u CSV-u
     headers_data = ["Datum"]
     for t in tickers:
         headers_data.extend([f"{t} Price", f"{t} Return"])
@@ -164,7 +162,6 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
         cell.alignment = align_center
         cell.border = border_all
 
-    # Upisivanje povijesnih podataka u ćelije s formulama za prinos
     for row_idx, date in enumerate(dates, start=4):
         c_date = ws2.cell(row=row_idx, column=1, value=date.strftime("%Y-%m-%d"))
         c_date.alignment = align_center
@@ -173,13 +170,10 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
         col_counter = 2
         for t_idx, t in enumerate(tickers):
             price = df_prices.loc[date, t]
-            
-            # Cijena
             c_price = ws2.cell(row=row_idx, column=col_counter, value=price)
             c_price.number_format = "$#,##0.00"
             c_price.border = border_all
             
-            # Prinos (Excel formula)
             c_ret = ws2.cell(row=row_idx, column=col_counter + 1)
             if row_idx == 4:
                 c_ret.value = "-"
@@ -232,12 +226,7 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
             
             if t_row == t_col:
                 cell_val.fill = fill_accent
-            elif corr_val > 0.5:
-                cell_val.fill = PatternFill(start_color="E2EFDA", end_color="E2EFDA", fill_type="solid")
-            elif corr_val < 0.2:
-                cell_val.fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
 
-    # Primjena heatmap-a na korelacijsku matricu
     if len(tickers) > 0:
         zadnji_red_corr = 4 + len(tickers)
         zadnji_stupac_corr = 1 + len(tickers)
@@ -250,9 +239,7 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
             end_type='num', end_value=1.0, end_color='C6E0B4'
         )
         ws3.conditional_formatting.add(raspon_matrice, rule)
-        print(f"[INFO] Heatmap primijenjen na raspon {raspon_matrice}")
 
-    # Deskriptivna statistika preko Excel formula
     ws3["A10"] = "Deskriptivna Statistika"
     ws3["A10"].font = font_section
 
@@ -304,20 +291,14 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
 
     ws4["A1"] = "Tehnička analiza i indikatori"
     ws4["A1"].font = font_title
-    ws4["A2"] = "Pregled ključnih indikatora (SMA, RSI, MACD, Bollinger Bands)"
+    ws4["A2"] = "Pregled ključnih indikatora (SMA 20/50/100/200, RSI, MACD, Bollinger Bands)"
     ws4["A2"].font = font_subtitle
 
-    # Generiramo dinamičko zaglavlje
     headers_tech = ["Datum"]
     for t in tickers:
         headers_tech.extend([
-            f"{t} Price", 
-            f"{t} SMA 20", 
-            f"{t} RSI 14", 
-            f"{t} MACD", 
-            f"{t} MACD Signal",
-            f"{t} BB Upper", 
-            f"{t} BB Lower"
+            f"{t} Price", f"{t} SMA 20", f"{t} SMA 50", f"{t} SMA 100", f"{t} SMA 200",
+            f"{t} RSI 14", f"{t} MACD", f"{t} MACD Signal", f"{t} BB Upper", f"{t} BB Lower"
         ])
 
     for col_idx, text in enumerate(headers_tech, start=1):
@@ -327,57 +308,37 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
         cell.alignment = align_center
         cell.border = border_all
 
-    # Unaprijed izračunavamo sve indikatore
     tech_data = {}
     for t in tickers:
         close_series = df_prices[t]
-        
-        # Osnovni indikatori
         sma20 = close_series.rolling(window=20).mean()
-        
-        # RSI
+        sma50 = close_series.rolling(window=50).mean()
+        sma100 = close_series.rolling(window=100).mean()
+        sma200 = close_series.rolling(window=200).mean()
         try:
             rsi14 = ta.rsi(close_series, length=14)
         except:
             rsi14 = pd.Series(np.nan, index=close_series.index)
         
-        # MACD
         try:
             macd_df = ta.macd(close_series, fast=12, slow=26, signal=9)
-            if macd_df is not None and not macd_df.empty and len(macd_df.columns) >= 3:
-                macd_val = macd_df.iloc[:, 0]
-                macd_sig = macd_df.iloc[:, 2]
-            else:
-                macd_val = pd.Series(np.nan, index=close_series.index)
-                macd_sig = pd.Series(np.nan, index=close_series.index)
+            macd_val = macd_df.iloc[:, 0] if macd_df is not None and not macd_df.empty else pd.Series(np.nan, index=close_series.index)
+            macd_sig = macd_df.iloc[:, 2] if macd_df is not None and not macd_df.empty else pd.Series(np.nan, index=close_series.index)
         except:
-            macd_val = pd.Series(np.nan, index=close_series.index)
-            macd_sig = pd.Series(np.nan, index=close_series.index)
+            macd_val = macd_sig = pd.Series(np.nan, index=close_series.index)
         
-        # Bollinger Bands
         try:
             bb_df = ta.bbands(close_series, length=20, std=2)
-            if bb_df is not None and not bb_df.empty and len(bb_df.columns) >= 3:
-                bb_lower = bb_df.iloc[:, 0]
-                bb_upper = bb_df.iloc[:, 2]
-            else:
-                bb_lower = pd.Series(np.nan, index=close_series.index)
-                bb_upper = pd.Series(np.nan, index=close_series.index)
+            bb_lower = bb_df.iloc[:, 0] if bb_df is not None and not bb_df.empty else pd.Series(np.nan, index=close_series.index)
+            bb_upper = bb_df.iloc[:, 2] if bb_df is not None and not bb_df.empty else pd.Series(np.nan, index=close_series.index)
         except:
-            bb_lower = pd.Series(np.nan, index=close_series.index)
-            bb_upper = pd.Series(np.nan, index=close_series.index)
+            bb_lower = bb_upper = pd.Series(np.nan, index=close_series.index)
         
         tech_data[t] = {
-            'price': close_series,
-            'sma20': sma20,
-            'rsi14': rsi14,
-            'macd': macd_val,
-            'macd_sig': macd_sig,
-            'bb_upper': bb_upper,
-            'bb_lower': bb_lower
+            'price': close_series, 'sma20': sma20, 'sma50': sma50, 'sma100': sma100, 'sma200': sma200,
+            'rsi14': rsi14, 'macd': macd_val, 'macd_sig': macd_sig, 'bb_upper': bb_upper, 'bb_lower': bb_lower
         }
 
-    # Upisivanje izračunatih podataka u Excel
     for row_idx, date in enumerate(dates, start=4):
         c_date = ws4.cell(row=row_idx, column=1, value=date.strftime("%Y-%m-%d"))
         c_date.alignment = align_center
@@ -385,21 +346,16 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
         
         col_counter = 2
         for t in tickers:
-            t_indicators = tech_data[t]
-            
-            row_values = [
-                (t_indicators['price'].loc[date], "$#,##0.00"),
-                (t_indicators['sma20'].loc[date], "$#,##0.00"),
-                (t_indicators['rsi14'].loc[date], "0.00"),
-                (t_indicators['macd'].loc[date], "0.0000"),
-                (t_indicators['macd_sig'].loc[date], "0.0000"),
-                (t_indicators['bb_upper'].loc[date], "$#,##0.00"),
-                (t_indicators['bb_lower'].loc[date], "$#,##0.00")
+            ti = tech_data[t]
+            row_vals = [
+                (ti['price'].loc[date], "$#,##0.00"), (ti['sma20'].loc[date], "$#,##0.00"),
+                (ti['sma50'].loc[date], "$#,##0.00"), (ti['sma100'].loc[date], "$#,##0.00"),
+                (ti['sma200'].loc[date], "$#,##0.00"), (ti['rsi14'].loc[date], "0.00"),
+                (ti['macd'].loc[date], "0.0000"), (ti['macd_sig'].loc[date], "0.0000"),
+                (ti['bb_upper'].loc[date], "$#,##0.00"), (ti['bb_lower'].loc[date], "$#,##0.00")
             ]
-            
-            for sub_idx, (val, num_fmt) in enumerate(row_values):
+            for sub_idx, (val, num_fmt) in enumerate(row_vals):
                 cell = ws4.cell(row=row_idx, column=col_counter + sub_idx)
-                
                 if pd.isna(val) or val is None:
                     cell.value = "-"
                     cell.alignment = align_center
@@ -407,37 +363,103 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
                     cell.value = float(val)
                     cell.number_format = num_fmt
                     cell.alignment = align_right
-                
                 cell.border = border_all
                 if row_idx % 2 == 1:
                     cell.fill = fill_zebra
+            col_counter += 10
+
+    # ==========================================
+    # TAB 5: OSNOVNE INFORMACIJE (NOVI MODUL)
+    # ==========================================
+    ws_info = wb.create_sheet(title="Osnovne Informacije")
+    ws_info.views.sheetView[0].showGridLines = True
+
+    ws_info["A1"] = "OSNOVNE INFORMACIJE I PROFIL IMOVINE"
+    ws_info["A1"].font = font_title
+    ws_info["A2"] = "Podaci preuzeti s Yahoo Finance API-ja"
+    ws_info["A2"].font = font_subtitle
+
+    headers_info = [
+        "Ticker", "Naziv", "Tip", "Sektor", "Industrija", 
+        "Trenutna Cijena", "Tržišna Kap.", "52t Visoko", "52t Nisko", 
+        "P/E Omjer", "Div. Prinos (%)", "Valuta", "Burza"
+    ]
+
+    for col_idx, text in enumerate(headers_info, start=1):
+        cell = ws_info.cell(row=4, column=col_idx, value=text)
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = align_center
+        cell.border = border_all
+
+    print("[PROCES] Dohvaćam fundamentalne info podatke za tickere...")
+    for row_idx, t in enumerate(tickers, start=5):
+        try:
+            info = yf.Ticker(t).info
+        except:
+            info = {}
+
+        naziv = info.get("longName", info.get("shortName", "N/A"))
+        tip = info.get("quoteType", "N/A")
+        sektor = info.get("sector", "N/A")
+        industrija = info.get("industry", "N/A")
+        cijena = info.get("currentPrice", info.get("regularMarketPrice", "N/A"))
+        market_cap = info.get("marketCap", "N/A")
+        high_52 = info.get("fiftyTwoWeekHigh", "N/A")
+        low_52 = info.get("fiftyTwoWeekLow", "N/A")
+        pe_ratio = info.get("trailingPE", "N/A")
+        div_yield = info.get("dividendYield", 0)
+        
+        if isinstance(div_yield, (int, float)):
+            div_yield = div_yield * 100
+        else:
+            div_yield = "N/A"
             
-            col_counter += 7
+        valuta = info.get("currency", "N/A")
+        burza = info.get("exchange", "N/A")
+
+        row_vals = [
+            (t, align_center, "@"),
+            (naziv, align_left, "@"),
+            (tip, align_center, "@"),
+            (sektor, align_left, "@"),
+            (industrija, align_left, "@"),
+            (cijena, align_right, "$#,##0.00"),
+            (market_cap, align_right, "$#,##0"),
+            (high_52, align_right, "$#,##0.00"),
+            (low_52, align_right, "$#,##0.00"),
+            (pe_ratio, align_right, "0.00"),
+            (div_yield, align_right, "0.00%"),
+            (valuta, align_center, "@"),
+            (burza, align_center, "@")
+        ]
+
+        for col_idx, (val, alignment, num_fmt) in enumerate(row_vals, start=1):
+            cell = ws_info.cell(row=row_idx, column=col_idx, value=val if val != "N/A" else "-")
+            cell.font = font_regular
+            cell.alignment = alignment
+            cell.border = border_all
+            if isinstance(val, (int, float)):
+                cell.number_format = num_fmt
+            if row_idx % 2 == 1:
+                cell.fill = fill_zebra
 
     # ==========================================
-    # TAB 5: VIZUALIZACIJA (GRAFIKONI)
+    # TAB 6: VIZUALIZACIJA (GRAFIKONI)
     # ==========================================
-    ws5 = wb.create_sheet(title="Vizualizacija")
-    ws5.views.sheetView[0].showGridLines = False
+    ws6 = wb.create_sheet(title="Vizualizacija")
+    ws6.views.sheetView[0].showGridLines = False
 
-    ws5["B2"] = "VIZUALIZACIJA PODATAKA"
-    ws5["B2"].font = Font(name="Arial", size=20, bold=True, color="203764")
-    ws5["B3"] = "Generirani svi tehnički i statistički grafikoni"
-    ws5["B3"].font = font_subtitle
+    ws6["B2"] = "VIZUALIZACIJA PODATAKA"
+    ws6["B2"].font = Font(name="Arial", size=20, bold=True, color="203764")
+    ws6["B3"] = "Generirani svi tehnički i statistički grafikoni"
+    ws6["B3"].font = font_subtitle
 
-    # Popis svih slika koje projekt generira
     popis_slika = [
-        "Svi_tickeri_Bollinger_kompletno.png",
-        "Svi_tickeri_EMA.png",
-        "Svi_tickeri_histogrami.png",
-        "Korelacijska matrica cijene.png",
-        "Kumulativni prikaz.png",
-        "Svi_tickeri_MACD.png",
-        "rolling_volatilnost_podgrafovi.png",
-        "Svi_tickeri_RSI.png",
-        "Svi_tickeri_Sezonalnost_dani.png",
-        "Svi_tickeri_Sezonalnost_mjeseci.png",
-        "Svi_tickeri_SMA.png"
+        "Svi_tickeri_Bollinger_kompletno.png", "Svi_tickeri_EMA.png", "Svi_tickeri_histogrami.png",
+        "Korelacijska matrica cijene.png", "Kumulativni prikaz.png", "Svi_tickeri_MACD.png",
+        "rolling_volatilnost_podgrafovi.png", "Svi_tickeri_RSI.png", "Svi_tickeri_Sezonalnost_dani.png",
+        "Svi_tickeri_Sezonalnost_mjeseci.png", "Svi_tickeri_SMA.png"
     ]
 
     trenutni_red = 5
@@ -445,7 +467,6 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     brojac_slika = 0
 
     print("[PROCES] Ugrađivanje grafikona u Excel galeriju...")
-
     for naziv_slike in popis_slika:
         if os.path.exists(naziv_slike):
             img = OpenpyxlImage(naziv_slike)
@@ -455,22 +476,19 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
             pozicija_stupac = stupci_za_slike[brojac_slika % 2]
             celija_sidro = f"{pozicija_stupac}{trenutni_red}"
             
-            opis_celija = ws5.cell(row=trenutni_red - 1, column=2 if pozicija_stupac == "B" else 12)
+            opis_celija = ws6.cell(row=trenutni_red - 1, column=2 if pozicija_stupac == "B" else 12)
             opis_celija.value = f"Grafikon: {naziv_slike.replace('.png', '').replace('_', ' ').upper()}"
             opis_celija.font = font_bold
             
-            ws5.add_image(img, celija_sidro)
-            
+            ws6.add_image(img, celija_sidro)
             if brojac_slika % 2 == 1:
                 trenutni_red += 20
-            
             brojac_slika += 1
-            print(f"  [+] Dodan grafikon: {naziv_slike}")
         else:
             print(f"  [-] Preskočeno: {naziv_slike} nije pronađen.")
 
     if brojac_slika == 0:
-        ws5["B5"] = "Nema pronađenih grafikona (.png datoteka) u mapi projekta."
+        ws6["B5"] = "Nema pronađenih grafikona (.png datoteka) u mapi projekta."
 
     # Automatsko podešavanje širine stupaca
     for ws in wb.worksheets:
