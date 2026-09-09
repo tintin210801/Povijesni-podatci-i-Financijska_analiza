@@ -421,9 +421,9 @@ def generiraj_excel_izvjestaj(csv_path="podaci.csv", excel_path="Financijski_Izv
     ws5 = wb.create_sheet(title="Vizualizacija")
     ws5.views.sheetView[0].showGridLines = False
 
-    ws5["B2"] = "CENTRALNI VIZUALNI DASHBOARD"
+    ws5["B2"] = "VIZUALIZACIJA PODATAKA"
     ws5["B2"].font = Font(name="Arial", size=20, bold=True, color="203764")
-    ws5["B3"] = "Svi tehnički i statistički grafikoni generirani kroz Python pipeline"
+    ws5["B3"] = "Generirani svi tehnički i statistički grafikoni"
     ws5["B3"].font = font_subtitle
 
     # Popis svih slika koje projekt generira
